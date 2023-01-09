@@ -47,14 +47,18 @@ dependencies {
             "javax.annotation:javax.annotation-api",
             "com.querydsl:querydsl-apt:${queryDslVersion}:jpa"
     )
+
+    implementation('org.modelmapper:modelmapper:3.1.1')
+
+    implementation('nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect:3.1.0')
+
+    implementation('org.springframework.boot:spring-boot-starter-validation')
 }
 
 tasks.named('test') {
+
     useJUnitPlatform()
 
-    doFirst {
-        delete file("$projectDir/build/generated")
-    }
 }
 
 sourceSets {
@@ -63,4 +67,8 @@ sourceSets {
             srcDirs = ["$projectDir/src/main/java", "$projectDir/build/generated"]
         }
     }
+}
+
+clean {
+    delete file("$projectDir/build/generated")
 }
