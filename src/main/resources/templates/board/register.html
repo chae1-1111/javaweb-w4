@@ -17,15 +17,18 @@
                             <div class="input-group mb-3">
                                 <span class="input-group-text">Title</span>
                                 <input type="text" name="title" placeholder="Title" class="form-control">
+                                <div id="titleValidation" class="invalid-feedback"></div>
                             </div>
                             <div class="input-group mb-3">
                                 <span class="input-group-text">Content</span>
                                 <textarea name="content" rows="5"
                                           class="form-control col-sm-5"></textarea>
+                                <div id="contentValidation" class="invalid-feedback"></div>
                             </div>
                             <div class="input-group mb-3">
                                 <span class="input-group-text">Writer</span>
                                 <input type="text" name="writer" class="form-control" placeholder="Writer"/>
+                                <div id="writerValidation" class="invalid-feedback"></div>
                             </div>
                             <div class="my-4">
                                 <div class="float-end">
@@ -41,16 +44,7 @@
     </div>
     <script layout:fragment="script" th:inline="javascript">
         const errors = [[${errors}]];
-        // console.log(errors);
-        
-        let errorMsg = "";
-        
-        if(errors) {
-            for (let i=0; i<errors.length; i++) {
-                errorMsg += `${errors[i].field} ${getErrorMsg(errors[i].code)} \n`;
-            }
-            alert(errorMsg);
-        }
+        errors != null && vaildCheck(errors);
     </script>
 </body>
 </html>

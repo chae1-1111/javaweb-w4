@@ -32,3 +32,17 @@ const getErrorMsg = (code) => {
         return "은(는)3자 이상, 100자 이하로만 입력해주세요.";
     }
 };
+
+const vaildCheck = (errors) => {
+    for (let i = 0; i < errors.length; i++) {
+        let field = errors[i].field;
+        let input = document.querySelector(`[name=${field}]`);
+        let feedback = document.querySelector(`#${field}Validation`);
+        feedback.innerHTML += "<p style='margin: 0;'>" + field + getErrorMsg(errors[i].code) + "</p>";
+        input.classList.add("is-invalid");
+        input.addEventListener("click", e => {
+            e.target.classList.remove("is-invalid");
+            feedback.innerHTML = "";
+        }, {once: true});
+    }
+}

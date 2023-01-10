@@ -27,51 +27,55 @@
                             <button type="button" class="btn btn-outline-secondary clearBtn">Clear</button>
                         </div>
                     </div>
-                    <div class="card">
-                        <div class="card-header">Board List</div>
-                        <div class="card-body">
-                            <h5 class="card-title">Board List</h5>
-                            <table class="table">
-                                <thead>
-                                    <tr>
-                                        <th scope="col">Bno</th>
-                                        <th scope="col">Title</th>
-                                        <th scope="col">Writer</th>
-                                        <th scope="col">RegDate</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr th:each="dto:${responseDTO.dtoList}">
-                                        <th scope="row">[[${dto.bno}]]</th>
-                                        <td><a class="link-dark" th:href="|@{/board/read}?bno=${dto.bno}&${pageRequestDTO.getLink()}|">[[${dto.title}]]</a></td>
-                                        <td>[[${dto.writer}]]</td>
-                                        <td>[[${#temporals.format(dto.regDate, 'yyyy-MM-dd')}]]</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-        
-                            <div class="d-flex justify-content-center">
-                                <ul class="pagination flex-wrap">
-                                    
-                                    <li class="page-item" th:if="${responseDTO.prev}">
-                                        <a class="page-link" th:data-num="${responseDTO.page - 1}">Previous</a>
-                                    </li>
-                                    <th:block th:each="i: ${#numbers.sequence(responseDTO.start, responseDTO.end)}">
-                                        <li th:class="${responseDTO.page == i} ? 'page-item active' : 'page-item'">
-                                            <a class="page-link" th:data-num="${i}">[[${i}]]</a>
-                                        </li>
-                                    </th:block>
-                                    <li class="page-item" th:if="${responseDTO.next}">
-                                        <a class="page-link" th:data-num="${responseDTO.page + 1}">Next</a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </form>
         </div>
-    
+        <div class="row mt-3">
+            <div class="col">
+                <div class="card">
+                    <div class="card-header">Board List</div>
+                    <div class="card-body">
+                        <h5 class="card-title">Board List</h5>
+                        <p class="text-end lh-1" style="font-size: 0.85rem;" th:text="${'검색결과: ' + responseDTO.total}"></p>
+                        <table class="table">
+                            <thead>
+                            <tr>
+                                <th scope="col">Bno</th>
+                                <th scope="col">Title</th>
+                                <th scope="col">Writer</th>
+                                <th scope="col">RegDate</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="dto:${responseDTO.dtoList}">
+                                <th scope="row">[[${dto.bno}]]</th>
+                                <td><a class="link-dark" th:href="|@{/board/read}?bno=${dto.bno}&${pageRequestDTO.getLink()}|">[[${dto.title}]]</a></td>
+                                <td>[[${dto.writer}]]</td>
+                                <td>[[${#temporals.format(dto.regDate, 'yyyy-MM-dd')}]]</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                
+                        <div class="d-flex justify-content-center">
+                            <ul class="pagination flex-wrap">
+                        
+                                <li class="page-item" th:if="${responseDTO.prev}">
+                                    <a class="page-link" th:data-num="${responseDTO.page - 1}">Previous</a>
+                                </li>
+                                <th:block th:each="i: ${#numbers.sequence(responseDTO.start, responseDTO.end)}">
+                                    <li th:class="${responseDTO.page == i} ? 'page-item active' : 'page-item'">
+                                        <a class="page-link" th:data-num="${i}">[[${i}]]</a>
+                                    </li>
+                                </th:block>
+                                <li class="page-item" th:if="${responseDTO.next}">
+                                    <a class="page-link" th:data-num="${responseDTO.page + 1}">Next</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
         <div class="modal" tabindex="-1">
             <div class="modal-dialog">
                 <div class="modal-content">
@@ -90,7 +94,6 @@
             </div>
         </div>
     </div>
-
     <script layout:fragment="script" th:inline="javascript">
         document.querySelector(".pagination").addEventListener('click', e => {
             e.preventDefault();

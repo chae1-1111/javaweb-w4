@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/basic.html}">
+<head>
+    <meta charset="UTF-8">
+    <title>Board Read</title>
+</head>
+<body>
+    <div layout:fragment="content">
+        <div class="row mt-3">
+            <div class="col">
+                <div class="card">
+                    <div class="card-header">
+                        Board Read
+                    </div>
+                    <div class="card-body">
+                        <form method="post" id="f1">
+                            <div class="input-group mb-3">
+                                <span class="input-group-text">Bno</span>
+                                <input type="text" class="form-control" th:value="${dto.bno}" name="bno" readonly>
+                            </div>
+                            <div class="input-group mb-3">
+                                <span class="input-group-text">Title</span>
+                                <input type="text" class="form-control" th:value="${dto.title}" name="title" >
+                                <div id="titleValidation" class="invalid-feedback"></div>
+                            </div>
+                            <div class="input-group mb-3">
+                                <span class="input-group-text">Content</span>
+                                <textarea class="form-control col-sm-5" rows="5" name="content" >[[${dto.content}]]</textarea>
+                                <div id="contentValidation" class="invalid-feedback"></div>
+                            </div>
+                            <div class="input-group mb-3">
+                                <span class="input-group-text">Writer</span>
+                                <input type="text" class="form-control" th:value="${dto.writer}" name="writer" >
+                                <div id="writerValidation" class="invalid-feedback"></div>
+                            </div>
+                            <div class="my-4">
+                                <div class="float-end">
+                                    <button type="button" class="btn btn-primary listBtn">List</button>
+                                    <button type="button" class="btn btn-secondary modifyBtn">Modify</button>
+                                    <button type="button" class="btn btn-danger removeBtn">Remove</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script layout:fragment="script" th:inline="javascript">
+        const errors = [[${errors}]];
+        errors != null && vaildCheck(errors);
+        
+        const link = [[${pageRequestDTO.getLink()}]];
+        const formObj = document.querySelector("#f1");
+        
+        document.querySelector(".listBtn").addEventListener('click', e => {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            formObj.reset();
+    
+            self.location = `/board/list?${link}`;
+        })
+        
+        document.querySelector(".modifyBtn").addEventListener('click', e => {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            formObj.action = `/board/modify?${link}`;
+            formObj.method = 'post';
+            formObj.submit();
+        });
+        
+        document.querySelector(".removeBtn").addEventListener('click', e => {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            formObj.action = `/board/remove`;
+            formObj.method = "post";
+            formObj.submit();
+        })
+    </script>
+</body>
+</html>
