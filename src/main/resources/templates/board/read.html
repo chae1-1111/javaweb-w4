@@ -51,9 +51,31 @@
                 </div>
             </div>
         </div>
-    </div>
-    <script layout:fragment="script" th:inline="javascript">
     
+        <div class="row mt-3">
+            <div class="col-md-12">
+                <div class="my-4">
+                    <button class="btn btn-info addReplyBtn">Add Reply</button>
+                </div>
+                <ul class="list-group replyList">
+                
+                </ul>
+            </div>
+        </div>
+        <div class="row mt-3">
+            <div class="col">
+                <ul class="pagination replyPaging">
+                
+                </ul>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="/js/reply.js"></script>
+    <script layout:fragment="script" th:inline="javascript">
+        const bno = [[${dto.bno}]];
+        
+        console.log(get1(bno));
     </script>
 </body>
 </html>
