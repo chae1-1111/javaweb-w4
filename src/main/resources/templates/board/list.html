@@ -49,7 +49,10 @@
                             <tbody>
                             <tr th:each="dto:${responseDTO.dtoList}">
                                 <th scope="row">[[${dto.bno}]]</th>
-                                <td><a class="link-dark" th:href="|@{/board/read}?bno=${dto.bno}&${pageRequestDTO.getLink()}|">[[${dto.title}]]</a></td>
+                                <td>
+                                    <a class="link-dark" th:href="|@{/board/read}?bno=${dto.bno}&${pageRequestDTO.getLink()}|">[[${dto.title}]]</a>
+                                    <span class="badge progress-bar-success" style="background-color: #0a53be">[[${dto.replyCount}]]</span>
+                                </td>
                                 <td>[[${dto.writer}]]</td>
                                 <td>[[${#temporals.format(dto.regDate, 'yyyy-MM-dd')}]]</td>
                             </tr>
