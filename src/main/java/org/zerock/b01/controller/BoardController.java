@@ -47,6 +47,7 @@ public class BoardController {
 
         if(bindingResult.hasErrors()) {
             log.info("has errors in BoardDTO");
+            redirectAttributes.addFlashAttribute("boardDTO", boardDTO);
             redirectAttributes.addFlashAttribute("errors", bindingResult.getAllErrors());
 
             return "redirect:/board/register";

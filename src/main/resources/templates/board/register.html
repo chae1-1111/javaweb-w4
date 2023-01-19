@@ -30,9 +30,15 @@
                                 <input type="text" name="writer" class="form-control" placeholder="Writer"/>
                                 <div id="writerValidation" class="invalid-feedback"></div>
                             </div>
+                            <div class="input-group mb-3">
+                                <span class="input-group-text">Images</span>
+                                <div class="float-end uploadHidden">
+                                    <button type="button" class="btn btn-primary uploadFileBtn">ADD Files</button>
+                                </div>
+                            </div>
                             <div class="my-4">
                                 <div class="float-end">
-                                    <button type="submit" class="btn btn-primary">Submit</button>
+                                    <button type="button" class="btn btn-primary submitBtn">Submit</button>
                                     <button type="reset" class="btn btn-secondary">Reset</button>
                                 </div>
                             </div>
@@ -41,10 +47,132 @@
                 </div>
             </div>
         </div>
+    
+        <div class="row mt-3">
+            <div class="col">
+                <div class="container-fluid d-flex uploadResult" style="flex-wrap: wrap;"></div>
+            </div>
+        </div>
+        
+        <div class="modal uploadModal" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Upload File</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="input-group mb-3">
+                            <input type="file" name="files" class="form-control" multiple>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary uploadBtn">Upload</button>
+                        <button type="button" class="btn btn-outline-dark closeUploadBtn">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    
+        <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+        <script src="/js/upload.js"></script>
     </div>
     <script layout:fragment="script" th:inline="javascript">
         const errors = [[${errors}]];
         errors != null && vaildCheck(errors);
+        
+        window.onload = () => {if([[${boardDTO}]] != null) setDefaultValue([[${boardDTO}]], showUploadFile);};
+        
+        const uploadModal = new bootstrap.Modal(document.querySelector(".modal.uploadModal"));
+        
+        document.querySelector(".uploadFileBtn").addEventListener("click", e => {
+            e.stopPropagation();
+            e.preventDefault();
+            uploadModal.show();
+            
+        }, false);
+        
+        document.querySelector(".closeUploadBtn").addEventListener("click", e => {
+            e.stopPropagation();
+            e.preventDefault();
+            uploadModal.hide();
+            
+        }, false);
+        
+        document.querySelector(".uploadBtn").addEventListener("click", e => {
+            
+            const formObj = new FormData();
+            
+            const fileInput = document.querySelector("input[name=files]");
+            
+            console.log(fileInput.files)
+            
+            const files = fileInput.files;
+            
+            for(let i=0; i<files.length; i++) {
+                
+                // replace underbar with dash in file name
+                let blob = files[i].slice(0,files[0].size, files[0].type);
+                let newFile = new File([blob], files[i].name.replaceAll("_","-"), {type: blob.type});
+                formObj.append("files", newFile);
+            }
+            
+            uploadToServer(formObj).then(result => {
+                for (const uploadResult of result) {
+                    showUploadFile(uploadResult);
+                }
+                fileInput.value = "";
+                uploadModal.hide();
+            }).catch(e => {
+                console.error(e);
+                uploadModal.hide();
+            })
+        })
+        
+        const uploadResult = document.querySelector(".uploadResult");
+        const showUploadFile = ({uuid, fileName, link}) => {
+            const str = `<div class="card col-4">
+                <div class="card-header d-flex justify-content-center">
+                    ${fileName}
+                    <button class="btn-sm btn-danger" onClick="javascript:removeFile('${uuid}', '${fileName}', this)">X</button>
+                </div>
+                <div class="card-body">
+                    <img src="/view/${link}" data-src="${uuid+"_"+fileName}"/>
+                </div>
+            </div>`;
+            
+            uploadResult.innerHTML += str;
+        }
+        
+        const removeFile = (uuid, fileName, obj) => {
+            
+            const targetDiv = obj.closest(".card");
+            
+            removeFileToServer(uuid, fileName).then(data => targetDiv.remove());
+        }
+        
+        document.querySelector(".submitBtn").addEventListener("click", e => {
+            
+            e.preventDefault();
+            e.stopPropagation();
+            
+            const target = document.querySelector(".uploadHidden");
+            
+            const uploadFiles = document.querySelectorAll("img");
+            
+            let str = "";
+            
+            for(let i=0; i<uploadFiles.length; i++) {
+                const uploadFile = uploadFiles[i];
+                const imgLink = uploadFile.getAttribute("src");
+                
+                str += `<input type='hidden' name='fileNames' value='${imgLink}'/>`;
+            }
+            
+            target.innerHTML = str;
+            
+            document.querySelector("form").submit();
+        }, false);
     </script>
 </body>
 </html>

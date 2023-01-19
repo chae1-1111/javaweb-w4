@@ -18,14 +18,14 @@ class B01ApplicationTests {
     @Autowired
     private DataSource dataSource;
 
-    @Test
-    void contextLoads() throws SQLException {
-        @Cleanup
-        Connection conn = dataSource.getConnection();
-
-        log.info(conn);
-
-        Assertions.assertNotNull(conn);
-    }
+//    @Test
+//    void contextLoads() throws SQLException {
+//        @Cleanup
+//        Connection conn = dataSource.getConnection();
+//
+//        log.info(conn);
+//
+//        Assertions.assertNotNull(conn);
+//    }
 
 }

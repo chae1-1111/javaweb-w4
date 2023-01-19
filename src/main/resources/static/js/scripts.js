@@ -46,3 +46,16 @@ const vaildCheck = (errors) => {
         }, {once: true});
     }
 }
+
+
+// if Has Valid Error, set default value for board form
+const setDefaultValue = ({title, content, writer, fileNames}, showUploadFile) => {
+    if(title && title.length > 0) document.querySelector("[name=title]").value = title;
+    if(content && content.length > 0) document.querySelector("[name=content]").value = content;
+    if(writer && writer.length > 0) document.querySelector("[name=writer]").value = writer;
+
+    fileNames.forEach(fileName => {
+        let arr = fileName.split("_");
+        showUploadFile({uuid: arr[1], fileName: arr[2], link: fileName.split("/view/")[1]});
+    })
+}
