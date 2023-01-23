@@ -1,5 +1,9 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/basic.html}">
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/basic.html}">
 <head>
     <meta charset="UTF-8">
     <title>Board Read</title>
@@ -37,12 +41,12 @@
                             <span class="input-group-text">ModDate</span>
                             <input type="text" class="form-control" th:value="${#temporals.format(dto.modDate,'yyyy-MM-dd')}" readonly>
                         </div>
-                        <div class="my-4">
+                        <div class="my-4" th:with="user=${#authentication.principal}">
                             <div class="float-end" th:with="link = ${pageRequestDTO.getLink()}">
                                 <a th:href="|@{/board/list}?${link}|" class="text-decoration-none">
                                     <button type="button" class="btn btn-primary">List</button>
                                 </a>
-                                <a th:href="|@{/board/modify}?bno=${dto.bno}&${link}|" class="text-decoration-none">
+                                <a th:if="${user != null && user.username == dto.writer}" th:href="|@{/board/modify}?bno=${dto.bno}&${link}|" class="text-decoration-none">
                                     <button type="button" class="btn btn-secondary">Modify</button>
                                 </a>
                             </div>
@@ -88,7 +92,7 @@
                         </div>
                         <div class="input-group mb-3">
                             <span class="input-group-text">Replyer</span>
-                            <input type="text" class="form-control replyer"/>
+                            <input type="text" class="form-control replyer" th:value="${#authentication.principal.username}" readonly/>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -125,6 +129,9 @@
         <script src="/js/reply.js"></script>
     </div>
     <script layout:fragment="script" th:inline="javascript">
+        
+        const currentUser = [[${#authentication.principal.username}]];
+        
         const bno = [[${dto.bno}]];
         
         let page = 1;
@@ -188,7 +195,6 @@
         const registerModalElements = {
             registerBtn: document.querySelector(".registerBtn"),
             replyText: document.querySelector(".replyText"),
-            replyer: document.querySelector(".replyer"),
             closeRegisterBtn: document.querySelector(".btn-close")
         };
         
@@ -203,15 +209,15 @@
         registerModalElements.registerBtn.addEventListener("click", e => {
             const replyObj = {
                 bno: bno,
-                replyText: modalElements.replyText.value,
-                replyer: modalElements.replyer.value
+                replyText: registerModalElements.replyText.value,
+                replyer: currentUser,
             };
             
             addReply(replyObj).then(result => {
                 alert(result.rno);
                 replyRegisterModal.hide();
-                modalElements.replyText.value = "";
-                modalElements.replyer.value = "";
+                registerModalElements.replyText.value = "";
+                registerModalElements.replyer.value = "";
                 printReplies(1,10,true);
             }).catch(e => {
                 console.error(e);
@@ -227,6 +233,8 @@
             removeBtn: document.querySelector(".removeBtn"),
             closeModifyBtn: document.querySelector(".closeModifyBtn")
         };
+        
+        let hasAuth = false;
         
         replyList.addEventListener("click", e => {
             
@@ -245,29 +253,39 @@
                 modifyModalElements.replyHeader.innerHTML = reply.rno;
                 modifyModalElements.replyText.value = reply.replyText;
                 replyModifyModal.show();
+                
+                hasAuth = currentUser === reply.replyer;
             }).catch(e => console.error(e));
         }, false);
-        
+
         modifyModalElements.modifyBtn.addEventListener("click", e => {
             
+            if(!hasAuth) {
+                alert("댓글 작성자만 수정할 수 있습니다.");
+                return;
+            }
             const replyObj = {
                 bno: bno,
                 rno: modifyModalElements.replyHeader.innerHTML,
                 replyText: modifyModalElements.replyText.value,
             };
-            
+    
             modifyReply(replyObj).then(result => {
                 alert(result.rno+' 댓글이 수정되었습니다.');
                 modifyModalElements.replyText.value = "";
                 replyModifyModal.hide();
                 printReplies(page, size);
             }).catch(e => console.error(e));
+    
         }, false);
         
         modifyModalElements.closeModifyBtn.addEventListener("click", e => replyModifyModal.hide());
         
         modifyModalElements.removeBtn.addEventListener("click", e => {
-            if(!confirm("정말로 삭제하시겠습니까?")) return;
+            if(!hasAuth) {
+                alert("댓글 작성자만 삭제할 수 있습니다.");
+                return;
+            }else if(!confirm("정말로 삭제하시겠습니까?")) return;
             
             let rno = modifyModalElements.replyHeader.innerHTML;
             removeReply(rno).then(result => {

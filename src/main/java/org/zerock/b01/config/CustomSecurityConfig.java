@@ -11,20 +11,55 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.AccessDeniedHandler;
+import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
+import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
+import org.zerock.b01.security.CustomUserDetailsService;
+import org.zerock.b01.security.handler.Custom403Handler;
+
+import javax.sql.DataSource;
 
 @Log4j2
 @Configuration
+@RequiredArgsConstructor
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class CustomSecurityConfig {
+
+    private final DataSource dataSource;
+    private final CustomUserDetailsService userDetailsService;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
 
         log.info("---------------configure---------------");
 
-        http.formLogin();
+        http.formLogin().loginPage("/member/login");
+
+        // CSRF 토큰 비활성화
+        http.csrf().disable();
+
+        http.rememberMe()
+                .key("12345678")
+                .tokenRepository(persistentTokenRepository())
+                .userDetailsService(userDetailsService)
+                .tokenValiditySeconds(60*60*60*24*30);
+
+        http.exceptionHandling().accessDeniedHandler(accessDeniedHandler());
 
         return http.build();
+    }
+
+    @Bean
+    public AccessDeniedHandler accessDeniedHandler() {
+        return new Custom403Handler();
+    }
+
+    @Bean
+    public PersistentTokenRepository persistentTokenRepository() {
+        JdbcTokenRepositoryImpl repo = new JdbcTokenRepositoryImpl();
+
+        repo.setDataSource(dataSource);
+        return repo;
     }
 
     @Bean

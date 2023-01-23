@@ -1,5 +1,9 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/basic.html}">
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/basic.html}">
 <head>
     <meta charset="UTF-8">
     <title>Board Register</title>
@@ -27,7 +31,7 @@
                             </div>
                             <div class="input-group mb-3">
                                 <span class="input-group-text">Writer</span>
-                                <input type="text" name="writer" class="form-control" placeholder="Writer"/>
+                                <input type="text" name="writer" class="form-control" placeholder="Writer" th:value="${#authentication.principal.username}" readonly/>
                                 <div id="writerValidation" class="invalid-feedback"></div>
                             </div>
                             <div class="input-group mb-3">
@@ -78,6 +82,7 @@
         <script src="/js/upload.js"></script>
     </div>
     <script layout:fragment="script" th:inline="javascript">
+        
         const errors = [[${errors}]];
         errors != null && vaildCheck(errors);
         
