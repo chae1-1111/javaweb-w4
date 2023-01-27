@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/basic.html}">
+<head>
+    <meta charset="UTF-8">
+    <title>Member Join Page</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="row mt-3">
+        <div class="col">
+            <div class="card">
+                <div class="card-header">JOIN</div>
+                <div class="card-body">
+                    <form action="/member/join" method="post" id="registerForm">
+                        <div class="input-group mb-3">
+                            <span class="input-group-text">MID</span>
+                            <input type="text" name="mid" class="form-control">
+                        </div>
+                        <div class="input-group mb-3">
+                            <span class="input-group-text">MPW</span>
+                            <input type="password" name="mpw" class="form-control">
+                        </div>
+                        <div class="input-group mb-3">
+                            <span class="input-group-text">EMAIL</span>
+                            <input type="text" name="email" class="form-control">
+                        </div>
+                        <div class="my-4">
+                            <div class="float-end">
+                                <button type="submit" class="btn btn-primary submitBtn">Submit</button>
+                                <button type="reset" class="btn btn-secondary">Reset</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script layout:fragment="script" th:inline="javascript">
+    const error = [[${error}]]
+    
+    if(error && error === 'mid') {
+        alert("이미 존재하는 아이디 입니다.");
+    }
+</script>
+</body>
+</html>
