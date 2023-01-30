@@ -33,6 +33,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 
         if(result.isEmpty()) throw new UsernameNotFoundException("username not found");
 
+
         Member member = result.get();
 
         MemberSecurityDTO memberSecurityDTO =
